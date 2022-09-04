@@ -82,3 +82,21 @@ def to_pgmpy(g):
     result.add_factors(*factors)
     result.check_model()
     return result
+
+
+def to_quimb(g):
+    """
+    Given a graph, build a `quimb` TensorNetwork.
+
+    See https://quimb.readthedocs.io/.
+
+    :param g: a `Graph`
+    :return: a `quimb.tensor.tensor_core.TensorNetwork`
+    """
+
+    import quimb.tensor as qtn
+    tensors = [qtn.Tensor(data=f.detach().numpy(), inds=f.names) for f in g.get_factors()]
+    result = tensors[0]
+    for t in tensors[1:]:
+        result = result & t
+    return result
