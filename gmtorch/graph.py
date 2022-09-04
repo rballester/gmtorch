@@ -90,7 +90,7 @@ class Graph(nx.Graph):
                 self.node2factors.pop(nodes[i])
                 self.remove_node(nodes[i])
 
-    def add_factor(self, factor, explore=False):
+    def add_factor(self, factor):
         """
         Add a new factor in-place. New nodes and edges will be added, if not previously present.
 
@@ -105,8 +105,7 @@ class Graph(nx.Graph):
         nodes = tuple(sorted(factor.names))
 
         if nodes in self.factors:  # Duplicate factors are not allowed. The new factor is absorbed
-            if not explore:
-                self.factors[nodes] = self.factors[nodes]*factor.align_as(self.factors[nodes])
+            self.factors[nodes] = self.factors[nodes]*factor.align_as(self.factors[nodes])
             return
 
         # Add to self.factors
