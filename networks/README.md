@@ -1,0 +1,1 @@
+All networks are taken from the [bnlearn Bayesian Network Repository](https://www.bnlearn.com/bnrepository/).
