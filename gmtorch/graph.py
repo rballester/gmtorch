@@ -320,7 +320,7 @@ class Graph(nx.Graph):
         :param evidence: a dictionary {node: value} (normal mode) or {node: vector of B values} (batched mode)
         :param mode:
             - If 'slice' (default), factors affected by the evidence will be sliced (will become smaller). This makes inference faster later on.
-            - If 'mask', the factors will retain their size but will be zeroed-out where relevant. This is good when we want to compute gradients later on.
+            - If 'mask', the factors will retain their size but will be zeroed-out where relevant. This is good when we want to compute gradients later on: each factor will store a 'mask' attribute for the caller to zero-out these gradients after the backward pass.
         :param batch_name: in batch mode, the name of the new node. If a node with that name already exists, a number will be appended (e.g. 'batch' -> 'batch_2'). Default is 'batch'
         :return: a :class:`Graph`
         """
@@ -369,6 +369,10 @@ class Graph(nx.Graph):
                 mask = torch.zeros_like(factor)
                 mask[tuple(idx)] = 1
                 factor.data *= mask
+                if not hasattr(factor, 'mask'):
+                    factor.mask = mask
+                else:
+                    factor.mask *= mask
             else:
                 raise ValueError('`mode` should be either slice or mask')
             self.add_factor(factor)
